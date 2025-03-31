@@ -1,0 +1,282 @@
+logging {
+  level = "debug"
+  write_to = [loki.relabel.alloy_logs.receiver]
+}
+
+loki.relabel "alloy_logs" {
+  rule {
+    target_label = "instance"
+    replacement = constants.hostname
+  }
+  rule {
+    target_label = "job"
+    replacement = "integrations/self"
+  }
+  forward_to = [loki.write.loki.receiver]
+}
+
+tracing {
+  sampling_fraction = 1.0
+  write_to = [otelcol.exporter.otlp.tempo.input]
+}
+
+prometheus.exporter.self "alloy" {}
+
+prometheus.scrape "alloy" {
+  targets    = prometheus.exporter.self.alloy.targets
+  forward_to = [prometheus.remote_write.mimir.receiver]
+}
+
+pyroscope.scrape "default" {
+  targets = [
+    {"__address__" = "localhost:12345", "service_name" = "alloy"},
+  ]
+  forward_to = [pyroscope.write.pyroscope.receiver]
+}
+
+prometheus.remote_write "mimir" {
+  endpoint {
+    url = string.format(
+      "http://%s/api/v1/push",
+      coalesce(sys.env("REMOTE_WRITE_HOST"), "localhost:9009"),
+    )
+  }
+}
+
+loki.write "loki" {
+  endpoint {
+    url = string.format(
+      "http://%s/loki/api/v1/push",
+      coalesce(sys.env("LOKI_HOST"), "localhost:3100"),
+    )
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = coalesce(sys.env("TEMPO_HOST"), "localhost:4317")
+
+    tls {
+      insecure = true
+    }
+  }
+}
+
+pyroscope.write "pyroscope" {
+  endpoint {
+    url = string.format(
+      "http://%s",
+      coalesce(sys.env("PYROSCOPE_HOST"), "localhost:4040"),
+    )
+  }
+}
+
+local.file_match "cron_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/cron/current",
+		host        = "${HOSTNAME}",
+		job         = "cron",
+	}]
+}
+
+loki.source.file "cron_logs" {
+	targets               = local.file_match.cron_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "daemon_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/daemon/current",
+		host        = "${HOSTNAME}",
+		job         = "daemon",
+	}]
+}
+
+loki.source.file "daemon_logs" {
+	targets               = local.file_match.daemon_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "debug_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/debug/current",
+		host        = "${HOSTNAME}",
+		job         = "debug",
+	}]
+}
+
+loki.source.file "debug_logs" {
+	targets               = local.file_match.debug_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "everything_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/everything/current",
+		host        = "${HOSTNAME}",
+		job         = "everything",
+	}]
+}
+
+loki.source.file "everything_logs" {
+	targets               = local.file_match.everything_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "kernel_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/kernel/current",
+		host        = "${HOSTNAME}",
+		job         = "kernel",
+	}]
+}
+
+loki.source.file "kernel_logs" {
+	targets               = local.file_match.kernel_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "messages_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/messages/current",
+		host        = "${HOSTNAME}",
+		job         = "messages",
+	}]
+}
+
+loki.source.file "messages_logs" {
+	targets               = local.file_match.messages_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "secure_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/secure/current",
+		host        = "${HOSTNAME}",
+		job         = "secure",
+	}]
+}
+
+loki.source.file "secure_logs" {
+	targets               = local.file_match.secure_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "errors_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/errors/current",
+		host        = "${HOSTNAME}",
+		job         = "errors",
+	}]
+}
+
+loki.source.file "errors_logs" {
+	targets               = local.file_match.errors_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "lpr_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/lpr/current",
+		host        = "${HOSTNAME}",
+		job         = "lpr",
+	}]
+}
+
+loki.source.file "lpr_logs" {
+	targets               = local.file_match.lpr_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "mail_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/mail/current",
+		host        = "${HOSTNAME}",
+		job         = "mail",
+	}]
+}
+
+loki.source.file "mail_logs" {
+	targets               = local.file_match.mail_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "remote_udp_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/remote-udp/current",
+		host        = "${HOSTNAME}",
+		job         = "remote-udp",
+	}]
+}
+
+loki.source.file "remote_udp_logs" {
+	targets               = local.file_match.remote_udp_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "tty12_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/tty12/current",
+		host        = "${HOSTNAME}",
+		job         = "tty12",
+	}]
+}
+
+loki.source.file "tty12_logs" {
+	targets               = local.file_match.tty12_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "user_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/user/current",
+		host        = "${HOSTNAME}",
+		job         = "user",
+	}]
+}
+
+loki.source.file "user_logs" {
+	targets               = local.file_match.user_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
+
+local.file_match "xbps_logs" {
+	path_targets = [{
+		__address__ = "localhost",
+		__path__    = "/var/log/socklog/xbps/current",
+		host        = "${HOSTNAME}",
+		job         = "xbps",
+	}]
+}
+
+loki.source.file "xbps_logs" {
+	targets               = local.file_match.xbps_logs.targets
+	forward_to            = [loki.write.loki.receiver]
+	legacy_positions_file = "/tmp/positions.yaml"
+}
