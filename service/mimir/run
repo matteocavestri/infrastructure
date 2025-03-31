@@ -1,0 +1,13 @@
+#!/bin/sh
+exec 2>&1
+
+exec podman run --rm \
+  --name mimir \
+  --volume /home/admin/.config/mimir:/etc/mimir-config \
+  --volume /home/admin/.local/share/mimir/blocks:/tmp/mimir/blocks \
+  --volume /home/admin/.local/share/mimir/tsdb:/tmp/mimir/tsdb \
+  --volume /home/admin/.local/share/mimir/tsdb-sync:/tmp/mimir/tsdb-sync \
+  --volume /home/admin/.local/share/mimir/rules:/tmp/mimir/rules \
+  --publish 9009:9009 \
+  docker.io/grafana/mimir:2.14.3 \
+  -config.file=/etc/mimir-config/mimir.yaml
