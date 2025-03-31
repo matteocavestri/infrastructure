@@ -1,0 +1,2 @@
+#!/bin/sh
+exec agetty --autologin admin --noclear tty8 38400 linux
