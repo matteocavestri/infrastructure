@@ -1,0 +1,4 @@
+#!/bin/sh
+for profile in /etc/apparmor.d/*; do
+    [ -f "$profile" ] && /usr/bin/apparmor_parser --replace "$profile"
+done
