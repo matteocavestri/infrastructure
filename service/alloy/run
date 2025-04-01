@@ -6,4 +6,4 @@ export REMOTE_WRITE_HOST="YOUR MIMIR HOST"
 export TEMPO_HOST="YOUR TEMPO HOST"
 export PYROSCOPE_HOST="YOUR PYROSCOPE HOST"
 
-exec /opt/alloy/alloy-linux-amd64 run /opt/alloy/config.alloy
+exec /opt/alloy/alloy-linux-amd64 run /etc/alloy/config.alloy
