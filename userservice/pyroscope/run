@@ -1,8 +1,8 @@
 #!/bin/sh
 exec 2>&1
 
-exec podman run --name pyroscope \
+exec podman run --rm \
+  --name pyroscope \
   --restart on-failure \
   -p 4040:4040 \
-  -v ~/.local/log/pyroscope:/var/log \
   grafana/pyroscope:1.5.0
