@@ -1,0 +1,2 @@
+#!/bin/sh
+exec vlogger -t influxdb2 -p daemon
