@@ -1,0 +1,10 @@
+#!/bin/sh
+exec 2>&1
+
+# Setup Podman environment variables
+# Not needed if you are using elogind
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+
+# Start podman rootless --> socket /run/user/1000/podman/podman.sock
+exec podman --log-level info system service --time=0
