@@ -1,0 +1,14 @@
+#!/bin/sh
+exec 2>&1
+
+exec podman run --rm \
+  --name tempo \
+  --user root \
+  --volume /home/admin/.config/tempo/tempo.yaml:/etc/tempo.yaml \
+  --volume /home/admin/.local/share/tempo:/tmp/tempo \
+  --publish 3200:3200 \
+  --publish 9095:9095 \
+  --publish 4317:4317 \
+  --publish 4318:4318 \
+  grafana/tempo:2.7.0 \
+  -config.file=/etc/tempo.yaml
