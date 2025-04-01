@@ -1,0 +1,14 @@
+#!/bin/sh
+exec 2>&1
+
+exec podman run --rm \
+  --name graphite \
+  --publish 8085:80 \
+  --publish 2003-2004:2003-2004 \
+  --publish 2023-2024:2023-2024 \
+  --publish 8125:8125/udp \
+  --publish 8126:8126 \
+  --volume /home/admin/.local/share/graphite/data:/opt/graphite/storage \
+  --volume /home/admin/.local/share/graphite/log:/var/log \
+  graphiteapp/graphite-statsd:1.1.10-5
+
