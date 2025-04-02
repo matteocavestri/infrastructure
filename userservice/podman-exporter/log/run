@@ -1,0 +1,2 @@
+#!/bin/sh
+exec vlogger -t podman-exporter -p daemon
