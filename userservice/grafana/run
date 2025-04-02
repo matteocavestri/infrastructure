@@ -7,4 +7,4 @@ exec podman run --rm \
   --publish 3000:3000 \
   --volume /home/admin/.local/share/grafana:/var/lib/grafana \
   --env-file /home/admin/.config/grafana/environment \
-  grafana/grafana-oss:11.5.2
+  grafana/grafana-oss:11.6.0
