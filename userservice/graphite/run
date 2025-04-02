@@ -9,6 +9,6 @@ exec podman run --rm \
   --publish 8125:8125/udp \
   --publish 8126:8126 \
   --volume /home/admin/.local/share/graphite/data:/opt/graphite/storage \
+  --volume /home/admin/.config/graphite:/opt/graphite/conf \
   --volume /home/admin/.local/share/graphite/log:/var/log \
   graphiteapp/graphite-statsd:1.1.10-5
-
