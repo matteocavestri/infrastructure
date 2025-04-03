@@ -1,0 +1,19 @@
+#!/bin/sh
+
+if ! podman network exists reverseproxy; then
+  podman network create reverseproxy
+fi
+
+exec podman run --rm \
+  --name=traefik \
+  --env-file /home/admin/.config/traefik/environment \
+  --volume /run/user/1000/podman/podman.sock:/var/run/docker.sock \
+  --volume /home/admin/.local/share/traefik/acme.json:/acme.json \
+  --volume /home/admin/.local/share/traefik/log:/var/log/traefik \
+  --volume /home/admin/.config/traefik/config.yml:/config.yml:ro \
+  --volume /home/admin/.config/traefik/traefik.yml:/traefik.yml:ro \
+  --net reverseproxy \
+  --publish 80:80 \
+  --publish 443:443 \
+  --publish 443:443/udp \
+  docker.io/library/traefik:v3.3.5
