@@ -6,5 +6,5 @@ exec podman run --rm \
   --volume /home/admin/.config/mimir:/etc/mimir-config \
   --volume /home/admin/.local/share/mimir:/tmp/mimir \
   --publish 9009:9009 \
-  docker.io/grafana/mimir:2.14.3 \
+  docker.io/grafana/mimir:2.16.0 \
   -config.file=/etc/mimir-config/mimir.yaml

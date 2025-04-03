@@ -3,6 +3,5 @@ exec 2>&1
 
 exec podman run --rm \
   --name pyroscope \
-  --restart on-failure \
   -p 4040:4040 \
-  grafana/pyroscope:1.5.0
+  grafana/pyroscope:1.12.1

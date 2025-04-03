@@ -10,5 +10,5 @@ exec podman run --rm \
   --publish 9095:9095 \
   --publish 4317:4317 \
   --publish 4318:4318 \
-  grafana/tempo:2.7.0 \
+  grafana/tempo:2.7.2 \
   -config.file=/etc/tempo.yaml
