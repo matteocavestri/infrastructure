@@ -1,0 +1,5 @@
+#!/bin/sh
+tail -f /home/admin/.local/share/traefik/log/traefik.log | vlogger -t traefik -p daemon &
+tail -f /home/admin/.local/share/traefik/log/access.log | vlogger -t traefik -p secure &
+wait
+

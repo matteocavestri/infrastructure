@@ -1,0 +1,19 @@
+#!/bin/sh
+exec 2>&1
+
+if ! podman network exists reverseproxy; then
+  podman network create reverseproxy
+fi
+
+exec podman run --rm \
+  --name grafana \
+  --user root \
+  --volume /home/admin/.local/share/grafana:/var/lib/grafana \
+  --env-file /home/admin/.config/grafana/environment \
+  --net reverseproxy \
+  --label 'traefik.enable=true' \
+  --label 'traefik.http.routers.grafana.rule=Host(`monitoring.example.com`)' \
+  --label 'traefik.http.routers.grafana.entrypoints=web,websecure' \
+  --label 'traefik.http.routers.grafana.tls.certresolver=njalla' \
+  --label 'traefik.http.services.grafana.loadbalancer.server.port=3000' \
+  grafana/grafana-oss:11.6.0

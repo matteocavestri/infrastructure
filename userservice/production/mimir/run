@@ -1,0 +1,15 @@
+#!/bin/sh
+exec 2>&1
+
+exec podman run --rm \
+  --name mimir \
+  --net reverseproxy \
+  --volume /home/admin/.config/mimir:/etc/mimir-config \
+  --volume /home/admin/.local/share/mimir:/tmp/mimir \
+  --label 'traefik.enable=true' \
+  --label 'traefik.http.routers.mimir.rule=Host(`mimir-srv-monitoring.local.example.com`)' \
+  --label 'traefik.http.routers.mimir.entrypoints=web,websecure' \
+  --label 'traefik.http.routers.mimir.tls.certresolver=njalla' \
+  --label 'traefik.http.services.mimir.loadbalancer.server.port=9009' \
+  docker.io/grafana/mimir:2.16.0 \
+  -config.file=/etc/mimir-config/mimir.yaml

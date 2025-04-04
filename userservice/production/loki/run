@@ -1,0 +1,19 @@
+#!/bin/sh
+exec 2>&1
+
+exec podman run --rm \
+  --name loki \
+  --user root \
+  --net reverseproxy \
+  --volume /home/admin/.config/loki:/etc/loki \
+  --volume /home/admin/.local/share/loki/data:/var/lib/loki \
+  --volume /home/admin/.local/share/loki/tmp:/tmp \
+  --publish 3100:3100 \
+  --publish 9096:9096 \
+  --label 'traefik.enable=true' \
+  --label 'traefik.http.routers.loki.rule=Host(`loki-srv-monitoring.local.example.com`)' \
+  --label 'traefik.http.routers.loki.entrypoints=web,websecure' \
+  --label 'traefik.http.routers.loki.tls.certresolver=njalla' \
+  --label 'traefik.http.services.loki.loadbalancer.server.port=3100' \
+  grafana/loki:3.4.2 \
+  -config.file=/etc/loki/loki-config.yaml

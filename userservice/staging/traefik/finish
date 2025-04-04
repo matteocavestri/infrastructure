@@ -1,0 +1,5 @@
+#!/bin/sh
+
+podman network rm reverseproxy 2>/dev/null || true
+
+exit 0

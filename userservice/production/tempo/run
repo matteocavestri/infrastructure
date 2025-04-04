@@ -1,0 +1,22 @@
+#!/bin/sh
+exec 2>&1
+
+exec podman run --rm \
+  --name tempo \
+  --user root \
+  --net reverseproxy \
+  --volume /home/admin/.config/tempo/tempo.yaml:/etc/tempo.yaml \
+  --volume /home/admin/.local/share/tempo:/tmp/tempo \
+  --label 'traefik.enable=true' \
+  --label 'traefik.http.routers.tempo.service=tempo' \
+  --label 'traefik.http.routers.tempo.rule=Host(`tempo-srv-monitoring.local.example.com`)' \
+  --label 'traefik.http.routers.tempo.entrypoints=web,websecure' \
+  --label 'traefik.http.routers.tempo.tls.certresolver=njalla' \
+  --label 'traefik.http.services.tempo.loadbalancer.server.port=3200' \
+  --label 'traefik.http.routers.tempo-otlp.service=tempo-otlp' \
+  --label 'traefik.http.routers.tempo-otlp.rule=Host(`tempo-otlp-srv-monitoring.local.example.com`)' \
+  --label 'traefik.http.routers.tempo-otlp.entrypoints=web,websecure' \
+  --label 'traefik.http.routers.tempo-otlp.tls.certresolver=njalla' \
+  --label 'traefik.http.services.tempo-otlp.loadbalancer.server.port=4318' \
+  grafana/tempo:2.7.2 \
+  -config.file=/etc/tempo.yaml

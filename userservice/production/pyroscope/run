@@ -1,0 +1,12 @@
+#!/bin/sh
+exec 2>&1
+
+exec podman run --rm \
+  --name pyroscope \
+  --net reverseproxy \
+  --label 'traefik.enable=true' \
+  --label 'traefik.http.routers.pyroscope.rule=Host(`pyroscope-srv-monitoring.local.example.com`)' \
+  --label 'traefik.http.routers.pyroscope.entrypoints=web,websecure' \
+  --label 'traefik.http.routers.pyroscope.tls.certresolver=njalla' \
+  --label 'traefik.http.services.pyroscope.loadbalancer.server.port=4040' \
+  grafana/pyroscope:1.12.1

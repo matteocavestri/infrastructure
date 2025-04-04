@@ -1,0 +1,15 @@
+#!/bin/sh
+exec 2>&1
+
+exec podman run --rm \
+  --name influxdb2 \
+  --net reverseproxy \
+  --volume /home/admin/.local/share/influxdb2:/var/lib/influxdb2 \
+  --volume /home/admin/.config/influxdb2:/etc/influxdb2 \
+  --env-file /home/admin/.config/influxdb2/environment \
+  --label 'traefik.enable=true' \
+  --label 'traefik.http.routers.influxdb.rule=Host(`influxdb2-srv-monitoring.local.example.com`)' \
+  --label 'traefik.http.routers.influxdb.entrypoints=web,websecure' \
+  --label 'traefik.http.routers.influxdb.tls.certresolver=njalla' \
+  --label 'traefik.http.services.influxdb.loadbalancer.server.port=8086' \
+  influxdb:2.7.11-alpine
